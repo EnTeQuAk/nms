@@ -27,6 +27,19 @@ DEFAULT_ATTACHMENT_MIME_TYPE = 'application/octet-stream'
 # contact strings
 _mail_split_re = re.compile(r'^(.*?)(?:\s+<(.+)>)?$')
 
+_mail_re = re.compile(r'''(?xi)
+    (?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+
+        (?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|
+        "(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|
+          \\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@.
+''')
+
+
+def is_valid_email(value):
+    if len(value) > 250 or _mail_re.match(value) is None:
+        return False
+    return True
+
 
 def split_email(s):
     """

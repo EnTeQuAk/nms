@@ -119,16 +119,16 @@ class PreferencesDialog(BaseDialog):
                 self._themes.append(theme)
                 if theme.name ==  ctx.theme_loader.current.name:
                     a = theme
-            if a: self._themes.select(a)
+            #if a: self._themes.select(a)
             self.widgets.no_themes_found.hide()
             self._themes.show()
         ctx.logger.debug('themes refreshed and repacked')
 
-    def on_theme_choice_changed(self, object, attr, value):
+    def on_theme_choice_changed(self, sender, obj):
         # set the new theme in ctx.settings
         if obj is not None:
             ctx.settings['theme_choice'] = obj.name
-            sender.emit_stop_by_name('selection-changed')
+            sender.emit_stop_by_name('item-changed')
         ctx.logger.debug('theme choice changed to %s'
             % ctx.settings['theme_choice'])
 
@@ -156,7 +156,7 @@ class EditorWindow(BaseWindow):
         self.window.maximize()
 
         theme = ctx.theme_loader.current
-        nodes = reversed(theme.token_tree.find_all(jnodes.Block))
+        nodes = theme.token_tree.find_all(jnodes.Block)
 
         wrapper = self.widgets.text_wrapper
         self.text_views = []
