@@ -11,7 +11,7 @@ import sys
 import gtk
 import gtk.glade
 from os import path, mkdir
-from jinja import Environment
+from jinja2 import Environment
 from nms import ctx
 from nms.utils.settings import Preferences
 from nms.utils.logger import Logger

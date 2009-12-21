@@ -3,9 +3,8 @@ import gtk
 from os import path
 from gtk import glade
 from copy import copy as ccopy
-from kiwi.ui.objectlist import Column, ObjectList
-from kiwi.ui.widgets.textview import ProxyTextView
-from jinja import nodes as jnodes
+from pygtkhelpers.ui.objectlist import Column, ObjectList
+from jinja2 import nodes as jnodes
 from nms import ctx, get_copyright, VERSION, LICENSE, AUTHORS, ARTISTS
 from nms.database import db, metadata, Recipient, recipients_table
 from nms.utils.dialogs import new_recipient_dialog
@@ -48,10 +47,10 @@ class PreferencesDialog(BaseDialog):
 
         # the combo box to change the active project
         self._themes = ObjectList([
-            Column('display_name', 'Name', str),
-            Column('author', 'Autor', str)
+            Column('display_name', str, 'Name'),
+            Column('author', str, 'Autor')
         ])
-        self._themes.connect('selection-changed', self.on_theme_choice_changed)
+        self._themes.connect('item-activated', self.on_theme_choice_changed)
         self._themes.set_border_width(10)
         self.widgets.theme_vbox.pack_end(self._themes)
         # add all themes to the combo
@@ -60,12 +59,12 @@ class PreferencesDialog(BaseDialog):
         # init the recipients ObjectList
         vbox = self.widgets.recipients_vbox
         self._recipients = ObjectList([
-            Column('name', 'Name', str, editable=True),
-            Column('mail', 'E-Mail', str, editable=True),
-            Column('active', 'Mail senden', bool, editable=True),
-            Column('comment', 'Bemerkung', str, editable=True)
+            Column('name', str, 'Name', editable=True),
+            Column('mail', str, 'E-Mail', editable=True),
+            Column('active', str, 'Mail senden', editable=True),
+            Column('comment', str, 'Bemerkung', editable=True)
         ])
-        self._recipients.connect('cell-edited', self._on_recipient_edited)
+        self._recipients.connect('item-changed', self._on_recipient_edited)
         vbox.pack_start(self._recipients)
         self._update_recipients()
         self._recipients.show()
@@ -99,7 +98,7 @@ class PreferencesDialog(BaseDialog):
             else:
                 self._recipients.append(rdiff[0])
 
-    def _on_recipient_edited(self, objl, obj, attr):
+    def _on_recipient_edited(self, sender, object, attr, value):
         db.commit()
         ctx.logger.debug('recipient edited')
 
@@ -125,7 +124,7 @@ class PreferencesDialog(BaseDialog):
             self._themes.show()
         ctx.logger.debug('themes refreshed and repacked')
 
-    def on_theme_choice_changed(self, sender, obj=None):
+    def on_theme_choice_changed(self, object, attr, value):
         # set the new theme in ctx.settings
         if obj is not None:
             ctx.settings['theme_choice'] = obj.name
@@ -157,7 +156,7 @@ class EditorWindow(BaseWindow):
         self.window.maximize()
 
         theme = ctx.theme_loader.current
-        nodes = list(jnodes.get_nodes(jnodes.Block, theme.token_tree))[::-1]
+        nodes = reversed(theme.token_tree.find_all(jnodes.Block))
 
         wrapper = self.widgets.text_wrapper
         self.text_views = []

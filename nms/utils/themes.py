@@ -3,7 +3,7 @@ from __future__ import with_statement
 import re
 from os import path, listdir
 from werkzeug import cached_property
-from jinja.loaders import BaseFileSystemLoader
+from jinja2.loaders import FileSystemLoader
 from nms import ctx
 from nms.utils.mail import split_email
 
@@ -47,10 +47,10 @@ def parse_metadata(string_or_fp):
     return result
 
 
-class ThemeLoader(BaseFileSystemLoader):
+class ThemeLoader(FileSystemLoader):
 
     def __init__(self):
-        pass
+        self.encoding = 'utf-8'
 
     @property
     def searchpath(self):
