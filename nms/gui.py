@@ -63,7 +63,7 @@ class PreferencesDialog(BaseDialog):
             Column('mail', str, 'E-Mail', editable=True),
             Column('active', str, 'Mail senden', editable=True),
             Column('comment', str, 'Bemerkung', editable=True)
-        ])
+        ], sortable=True)
         self._recipients.connect('item-changed', self._on_recipient_edited)
         vbox.pack_start(self._recipients)
         self._update_recipients()
